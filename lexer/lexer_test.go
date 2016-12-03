@@ -11,6 +11,7 @@ type TokenMatcher struct {
 }
 
 func runTokenMatches(t *testing.T, source string, tests []TokenMatcher) {
+	testsLength := len(tests)
 	lexer := New(source)
 
 	for _, tm := range tests {
@@ -23,6 +24,12 @@ func runTokenMatches(t *testing.T, source string, tests []TokenMatcher) {
 		if tok.Value != tm.expectedValue {
 			t.Fatalf("Wrong token value: expected=%q, got=%q", tm.expectedValue, tok.Value)
 		}
+	}
+
+	tokensArrayLength := len(lexer.Tokens)
+
+	if testsLength != tokensArrayLength {
+		t.Fatalf("Wrong token array length: expected=%d, got=%d", testsLength, tokensArrayLength)
 	}
 }
 
@@ -58,6 +65,18 @@ func TestOperators(t *testing.T) {
 		{token.RANGLE, ">"},
 		{token.STAR, "*"},
 		{token.SLASH, "/"},
+		{token.PERC, "%"},
+	}
+
+	runTokenMatches(t, source, tests)
+}
+
+func TestWhitepaceBehaviour(t *testing.T) {
+	source := "! =        %"
+
+	tests := []TokenMatcher{
+		{token.BANG, "!"},
+		{token.ASSIGN, "="},
 		{token.PERC, "%"},
 	}
 

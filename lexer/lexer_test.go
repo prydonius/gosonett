@@ -73,7 +73,7 @@ func TestWhitepace(t *testing.T) {
 }
 
 func TestComments(t *testing.T) {
-  source := `
+	source := `
 ! # Inline Comment !!!!!
 = // Inline comment ===
 !

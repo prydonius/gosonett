@@ -2,7 +2,6 @@ package lexer
 
 import (
 	"errors"
-	"fmt"
 	"github.com/owlci/gosonett/token"
 	"unicode"
 )
@@ -39,7 +38,6 @@ func New(source string) *Lexer {
 }
 
 func (l *Lexer) willOverflow() bool {
-	fmt.Printf("  willOverflow -> %v %v\n", l.index, l.sourceLength)
 	return l.index+1 >= l.sourceLength
 }
 
@@ -55,9 +53,6 @@ func (l *Lexer) NextChar() (byte, error) {
 	}
 
 	char := l.CurrentChar()
-
-	fmt.Printf("Token: %q  , Index: %d  , Length: %d\n", char, l.index, l.sourceLength)
-
 	l.index++
 
 	if char == '\n' {
@@ -114,36 +109,34 @@ func (l *Lexer) Tokenize() token.Token {
 	case '*':
 		tok = token.New(token.STAR, char)
 	case '/':
-    peekedChar, err := l.Peek()
+		peekedChar, err := l.Peek()
 
-    // Maybe Peek should just return os.EOF constant or something
-    if err != nil {
-      panic("Out of bounds")
-    }
+		// Maybe Peek should just return os.EOF constant or something
+		if err != nil {
+			panic("Out of bounds")
+		}
 
-    // Single-line comment
-    if peekedChar == '/' {
-      l.eatCurrentLine()
-      return l.Tokenize()
-    }
+		// Single-line comment
+		if peekedChar == '/' {
+			l.eatCurrentLine()
+			return l.Tokenize()
+		}
 
-    // Multi-line comment
-    if peekedChar == '*' {
-      // TODO: Handle multi-line-comments
-      // l.eatMultiLineComment()
-      // return l.Tokenize()
-    }
+		// Multi-line comment
+		if peekedChar == '*' {
+			// TODO: Handle multi-line-comments
+			// l.eatMultiLineComment()
+			// return l.Tokenize()
+		}
 
-    // Must be a single token acting as an operator
+		// Must be a single token acting as an operator
 		tok = token.New(token.SLASH, char)
 	case '%':
 		tok = token.New(token.PERC, char)
 	case '#':
-    l.eatCurrentLine()
-    return l.Tokenize()
+		l.eatCurrentLine()
+		return l.Tokenize()
 	}
-
-  fmt.Printf("Appending token => %q %q", tok.Type, tok.Value)
 
 	// Store the token
 	l.Tokens = append(l.Tokens, tok)
@@ -167,12 +160,12 @@ func (l *Lexer) eatUntil(untilChar byte) {
 		l.NextChar()
 	}
 
-  // Point to the byte after our until
-  l.NextChar()
+	// Point to the byte after our until
+	l.NextChar()
 }
 
 func (l *Lexer) eatCurrentLine() {
-  l.eatUntil('\n')
+	l.eatUntil('\n')
 }
 
 func (l *Lexer) eatMultiLineComment() {

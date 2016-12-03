@@ -47,12 +47,14 @@ func (l *Lexer) CurrentChar() byte {
 }
 
 func (l *Lexer) NextChar() (byte, error) {
+	var char byte
+
 	if l.willOverflow() {
 		// TODO: Zero valued bytes, how?
-		return '\x00', errors.New("Lexer will overflow")
+		return char, errors.New("Lexer will overflow")
 	}
 
-	char := l.CurrentChar()
+	char = l.CurrentChar()
 	l.index++
 
 	if char == '\n' {

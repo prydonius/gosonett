@@ -70,12 +70,13 @@ func (l *Lexer) NextChar() (byte, error) {
 }
 
 // Returns the next lookahead character without advancing the lexer
-func (l *Lexer) Peek() byte {
+func (l *Lexer) Peek() (byte, error) {
 	if l.willOverflow() {
-		fmt.Println("Lexer will overflow")
+		// TODO: Zero valued bytes, how?
+		return '\x00', errors.New("Lexer will overflow")
 	}
 
-	return l.Source[l.index+1]
+	return l.Source[l.index+1], nil
 }
 
 // Returns the next valid token in the input stream
@@ -113,10 +114,36 @@ func (l *Lexer) Tokenize() token.Token {
 	case '*':
 		tok = token.New(token.STAR, char)
 	case '/':
+    peekedChar, err := l.Peek()
+
+    // Maybe Peek should just return os.EOF constant or something
+    if err != nil {
+      panic("Out of bounds")
+    }
+
+    // Single-line comment
+    if peekedChar == '/' {
+      l.eatCurrentLine()
+      return l.Tokenize()
+    }
+
+    // Multi-line comment
+    if peekedChar == '*' {
+      // TODO: Handle multi-line-comments
+      // l.eatMultiLineComment()
+      // return l.Tokenize()
+    }
+
+    // Must be a single token acting as an operator
 		tok = token.New(token.SLASH, char)
 	case '%':
 		tok = token.New(token.PERC, char)
+	case '#':
+    l.eatCurrentLine()
+    return l.Tokenize()
 	}
+
+  fmt.Printf("Appending token => %q %q", tok.Type, tok.Value)
 
 	// Store the token
 	l.Tokens = append(l.Tokens, tok)
@@ -133,4 +160,20 @@ func (l *Lexer) eatWhitespace() {
 	for unicode.IsSpace(rune(l.CurrentChar())) {
 		l.NextChar()
 	}
+}
+
+func (l *Lexer) eatUntil(untilChar byte) {
+	for l.CurrentChar() != untilChar {
+		l.NextChar()
+	}
+
+  // Point to the byte after our until
+  l.NextChar()
+}
+
+func (l *Lexer) eatCurrentLine() {
+  l.eatUntil('\n')
+}
+
+func (l *Lexer) eatMultiLineComment() {
 }

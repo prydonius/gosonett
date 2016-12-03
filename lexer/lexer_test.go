@@ -34,17 +34,6 @@ func runTokenMatches(t *testing.T, source string, tests []TokenMatcher) {
 }
 
 func TestSymbols(t *testing.T) {
-	// tests := []TokenMatcher {
-	//   {token.ASSIGN, "="},
-	//   {token.PLUS, "+"},
-	//   {token.LPAREN, "("},
-	//   {token.RPAREN, ")"},
-	//   {token.LBRACE, "{"},
-	//   {token.RBRACE, "}"},
-	//   {token.COMMA, ","},
-	//   {token.SEMICOLON, ";"},
-	//   {token.EOF, ""},
-	// }
 }
 
 func TestOperators(t *testing.T) {
@@ -71,13 +60,29 @@ func TestOperators(t *testing.T) {
 	runTokenMatches(t, source, tests)
 }
 
-func TestWhitepaceBehaviour(t *testing.T) {
+func TestWhitepace(t *testing.T) {
 	source := "! =        %"
 
 	tests := []TokenMatcher{
 		{token.BANG, "!"},
 		{token.ASSIGN, "="},
 		{token.PERC, "%"},
+	}
+
+	runTokenMatches(t, source, tests)
+}
+
+func TestComments(t *testing.T) {
+  source := `
+! # Inline Comment !!!!!
+= // Inline comment ===
+!
+`
+
+	tests := []TokenMatcher{
+		{token.BANG, "!"},
+		{token.ASSIGN, "="},
+		{token.BANG, "!"},
 	}
 
 	runTokenMatches(t, source, tests)

@@ -17,6 +17,15 @@ const (
 
 	// TODO: Symbols
 	// {}[],.();
+	LBRACE    = "{"
+	RBRACE    = "}"
+	LBRACKET  = "["
+	RBRACKET  = "]"
+	COMMA     = ","
+	DOT       = "."
+	LPAREN    = "("
+	RPAREN    = ")"
+	SEMICOLON = ";"
 
 	// Operators
 	// !$:~+-&|^=<>*/%

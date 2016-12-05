@@ -14,6 +14,7 @@ func New(tokenType TokenType, char byte) Token {
 const (
 	// Special Lexemes
 	EOF = "EOF"
+  IDENT = "IDENT"
 
 	// TODO: Symbols
 	// {}[],.();
@@ -55,3 +56,31 @@ const (
 	SELF       = "self"
 	SUPER      = "super"
 )
+
+var keywords = map[string]TokenType{
+  "assert": ASSERT,
+  "error": ERROR,
+  "if": IF,
+  "then": THEN,
+  "else": ELSE,
+  "true": TRUE,
+  "false": FALSE,
+  "for": FOR,
+  "function": FUNCTION,
+  "import": IMPORT,
+  "importstr": IMPORTSTR,
+  "tailstrict": TAILSTRICT,
+  "in": IN,
+  "local": LOCAL,
+  "null": NULL,
+  "self": SELF,
+  "super": SUPER,
+}
+
+func GetKeywordKind(ident string) TokenType {
+  if tok, ok := keywords[ident]; ok {
+    return tok
+  }
+
+  return IDENT
+}

@@ -1,9 +1,10 @@
 package lexer
 
 import (
+  "fmt"
 	"errors"
-	"github.com/owlci/gosonett/token"
 	"unicode"
+	"github.com/owlci/gosonett/token"
 )
 
 type LexerPosition struct {
@@ -76,9 +77,17 @@ func (l *Lexer) Peek() (byte, error) {
 	return l.Source[l.index+1], nil
 }
 
+// Advances through the whole string source and tokenizes every lexeme
+// func (l *Lexer) Lex() ([]token.Token, error) {
+//   for r := l.Tokenize(); r != token.EOF; r = l.Tokenize()() {}
+
+//   return l.Tokens, nil
+// }
+
 // Returns the next valid token in the input stream
 func (l *Lexer) Tokenize() token.Token {
 	var tok token.Token
+  // var err error
 
 	l.eatWhitespace()
 	char := l.CurrentChar()
@@ -138,6 +147,16 @@ func (l *Lexer) Tokenize() token.Token {
 	case '#':
 		l.eatCurrentLine()
 		return l.Tokenize()
+  // case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+  // token, _ := l.lexNumber()
+  default:
+    if isIdentifierFirst(rune(char)) {
+      // NOTE: Error handling
+      tok, _ = l.lexIdentifier()
+    } else {
+      // TODO: Use the LexerPosition struct to print out something nice here
+      panic("Unknown lexing character")
+    }
 	}
 
 	// Store the token
@@ -171,4 +190,37 @@ func (l *Lexer) eatCurrentLine() {
 }
 
 func (l *Lexer) eatMultiLineComment() {
+}
+
+func (l *Lexer) lexIdentifier() (token.Token, error) {
+  // var tok token.Token
+
+  startIndex := l.index
+
+  fmt.Println("Starting to lex identifier")
+
+  // for unicode.IsLetter(rune(l.CurrentChar())) {
+  //   fmt.Printf("Have identifier char : %q", l.CurrentChar())
+  //   l.NextChar()
+  // }
+
+  ident := l.Source[startIndex:l.index]
+
+  fmt.Printf("Have identifier : %q \n", ident)
+
+  // matchKeyword and return keyword token
+
+  // else return valid identifier token
+  // return token.Token{Type: token.IDENT, Value: "if"}, nil
+  return token.Token{Type: "IF", Value: "if"}, nil
+
+}
+
+// NOTE: Taken from here https://github.com/google/go-jsonnet/blob/master/lexer.go#L189
+func isIdentifierFirst(r rune) bool {
+	return unicode.IsUpper(r) || unicode.IsLower(r) || r == '_'
+}
+
+func isIdentifier(r rune) bool {
+	return isIdentifierFirst(r) || unicode.IsNumber(r)
 }

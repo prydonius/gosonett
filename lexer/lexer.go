@@ -1,10 +1,9 @@
 package lexer
 
 import (
-  "fmt"
 	"errors"
-	"unicode"
 	"github.com/owlci/gosonett/token"
+	"unicode"
 )
 
 type LexerPosition struct {
@@ -87,7 +86,7 @@ func (l *Lexer) Peek() (byte, error) {
 // Returns the next valid token in the input stream
 func (l *Lexer) Tokenize() token.Token {
 	var tok token.Token
-  // var err error
+	// var err error
 
 	l.eatWhitespace()
 	char := l.CurrentChar()
@@ -147,16 +146,16 @@ func (l *Lexer) Tokenize() token.Token {
 	case '#':
 		l.eatCurrentLine()
 		return l.Tokenize()
-  // case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-  // token, _ := l.lexNumber()
-  default:
-    if isIdentifierFirst(rune(char)) {
-      // NOTE: Error handling
-      tok, _ = l.lexIdentifier()
-    } else {
-      // TODO: Use the LexerPosition struct to print out something nice here
-      panic("Unknown lexing character")
-    }
+	// case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+	// token, _ := l.lexNumber()
+	default:
+		if isIdentifierFirst(rune(char)) {
+			// NOTE: Error handling
+			tok, _ = l.lexIdentifier()
+		} else {
+			// TODO: Use the LexerPosition struct to print out something nice here
+			panic("Unknown lexing character")
+		}
 	}
 
 	// Store the token
@@ -193,27 +192,35 @@ func (l *Lexer) eatMultiLineComment() {
 }
 
 func (l *Lexer) lexIdentifier() (token.Token, error) {
-  // var tok token.Token
+	var endIndex int
 
-  startIndex := l.index
+	reachedEnd := false
+	startIndex := l.index
 
-  fmt.Println("Starting to lex identifier")
+	for isIdentifier(rune(l.CurrentChar())) {
+		_, err := l.NextChar()
 
-  // for unicode.IsLetter(rune(l.CurrentChar())) {
-  //   fmt.Printf("Have identifier char : %q", l.CurrentChar())
-  //   l.NextChar()
-  // }
+		// Probably because we have reached the end of the source string
+		// TODO: Check for special EOF to make sure this is the case
+		if err != nil {
+			reachedEnd = true
+			break
+		}
+	}
 
-  ident := l.Source[startIndex:l.index]
+	// For half-open intervals
+	if reachedEnd {
+		endIndex = l.index + 1
+	} else {
+		endIndex = l.index
+	}
 
-  fmt.Printf("Have identifier : %q \n", ident)
+	ident := l.Source[startIndex:endIndex]
 
-  // matchKeyword and return keyword token
+	// matchKeyword and return keyword token
+	tokenType := token.GetKeywordKind(ident)
 
-  // else return valid identifier token
-  // return token.Token{Type: token.IDENT, Value: "if"}, nil
-  return token.Token{Type: "IF", Value: "if"}, nil
-
+	return token.Token{Type: tokenType, Value: ident}, nil
 }
 
 // NOTE: Taken from here https://github.com/google/go-jsonnet/blob/master/lexer.go#L189

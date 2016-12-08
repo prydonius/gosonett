@@ -34,6 +34,21 @@ func runTokenMatches(t *testing.T, source string, tests []TokenMatcher) {
 }
 
 func TestSymbols(t *testing.T) {
+	source := "{}[],.();"
+
+	tests := []TokenMatcher{
+		{token.LBRACE, "{"},
+		{token.RBRACE, "}"},
+		{token.LBRACKET, "["},
+		{token.RBRACKET, "]"},
+		{token.COMMA, ","},
+		{token.DOT, "."},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+	}
+
+	runTokenMatches(t, source, tests)
 }
 
 func TestOperators(t *testing.T) {

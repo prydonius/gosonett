@@ -92,6 +92,24 @@ func (l *Lexer) Tokenize() token.Token {
 	char := l.CurrentChar()
 
 	switch char {
+	case '{':
+		tok = token.New(token.LBRACE, char)
+	case '}':
+		tok = token.New(token.RBRACE, char)
+	case '[':
+		tok = token.New(token.LBRACKET, char)
+	case ']':
+		tok = token.New(token.RBRACKET, char)
+	case ',':
+		tok = token.New(token.COMMA, char)
+	case '.':
+		tok = token.New(token.DOT, char)
+	case '(':
+		tok = token.New(token.LPAREN, char)
+	case ')':
+		tok = token.New(token.RPAREN, char)
+	case ';':
+		tok = token.New(token.SEMICOLON, char)
 	case '!':
 		tok = token.New(token.BANG, char)
 	case '$':

@@ -152,9 +152,8 @@ func (l *Lexer) Tokenize() token.Token {
 
 		// Multi-line comment
 		if peekedChar == '*' {
-			// TODO: Handle multi-line-comments
-			// l.eatMultiLineComment()
-			// return l.Tokenize()
+			l.eatMultiLineComment()
+			return l.Tokenize()
 		}
 
 		// Must be a single token acting as an operator
@@ -195,7 +194,9 @@ func (l *Lexer) eatWhitespace() {
 
 func (l *Lexer) eatUntil(untilChar byte) {
 	for l.CurrentChar() != untilChar {
-		l.NextChar()
+		if _, err := l.NextChar(); err != nil {
+			panic(err)
+		}
 	}
 
 	// Point to the byte after our until
@@ -207,6 +208,12 @@ func (l *Lexer) eatCurrentLine() {
 }
 
 func (l *Lexer) eatMultiLineComment() {
+	for {
+		l.eatUntil('*')
+		if char, _ := l.NextChar(); char == '/' {
+			break
+		}
+	}
 }
 
 func (l *Lexer) lexIdentifier() (token.Token, error) {

@@ -92,12 +92,17 @@ func TestComments(t *testing.T) {
 ! # Inline Comment !!!!!
 = // Inline comment ===
 !
+/*
+	** Multi-line comment **
+*/
+*
 `
 
 	tests := []TokenMatcher{
 		{token.BANG, "!"},
 		{token.ASSIGN, "="},
 		{token.BANG, "!"},
+		{token.STAR, "*"},
 	}
 
 	runTokenMatches(t, source, tests)
